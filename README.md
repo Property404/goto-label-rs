@@ -36,6 +36,7 @@ unsafe {
 ## Known issues
 
 * Segfaults will occur when optimization is enabled, even in trivial examples
+* Segfaults will also occur in debug mode on macOS
 
 ## Currently supported Architectures
 
