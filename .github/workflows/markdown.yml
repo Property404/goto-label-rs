@@ -1,0 +1,17 @@
+---
+name: Markdown CI
+
+# yamllint disable-line rule:truthy
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install MDL
+        run: sudo gem install mdl
+      - name: Lint README
+        run: mdl -- $(find . -name '*.md')

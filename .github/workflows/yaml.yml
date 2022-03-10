@@ -1,0 +1,17 @@
+---
+name: Yaml CI
+
+# yamllint disable-line rule:truthy
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install yamllint
+        run: sudo apt install yamllint
+      - name: Lint yaml files
+        run: yamllint -- $(find . -name '*.yml' -or -name '*.yaml')
