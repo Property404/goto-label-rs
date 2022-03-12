@@ -3,8 +3,11 @@
 Tired of using newfangled control flow mechnisms like "loop," "while,"
 and "for"?
 
-Well worry no more! Finally, usable "goto" and "label" macros have arrived
-for Rust! And they're `#![no_std]`!
+Well worry no more! Finally, "goto" and "label" macros have arrived for Rust!
+And they're `#![no_std]`!
+
+**Warning** - Do not actually use this crate. It will definitely cause
+undefined behavior, most likely manifesting as segfaults.
 
 ```rust
 use goto_label::{goto, label};
@@ -32,11 +35,6 @@ unsafe {
     hello_world();
 }
 ```
-
-## Known issues
-
-* Segfaults will occur when optimization is enabled, even in trivial examples
-* Segfaults will also occur in debug mode on macOS
 
 ## Currently supported Architectures
 
