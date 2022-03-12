@@ -4,7 +4,7 @@
 //!
 //! # Example
 //! ```
-//! use goto_label::{goto, label};
+//! use goto_label::{goto, label, might_skip};
 //!
 //! #[no_mangle] // Needed to prevent foo() from being optimized away
 //! unsafe fn foo() {
@@ -19,7 +19,7 @@
 //!
 //! unsafe fn hello_world() {
 //!     goto!("label1");
-//!     println!("This won't be printed either!");
+//!     might_skip!{println!("This won't be printed either!")};
 //!
 //!     label!("label2");
 //!     println!(" World!");
@@ -46,16 +46,18 @@
 /// ```
 #[macro_export]
 macro_rules! label {
-    ($label:literal) => {{
-        #[allow(named_asm_labels)]
-        #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-        {
-            use core::arch::asm;
-            asm!(concat!($label, ":"));
-        }
-        #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
-        compile_error!("`label!` not implemented for this architecture!");
-    }};
+    ($label:literal) => {
+        $crate::might_skip! {{
+            #[allow(named_asm_labels)]
+            #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+            {
+                use core::arch::asm;
+                asm!(concat!($label, ":"));
+            }
+            #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+            compile_error!("`label!` not implemented for this architecture!");
+        }}
+    };
 }
 
 /// Jump to label
@@ -75,35 +77,54 @@ macro_rules! label {
 /// ```
 #[macro_export]
 macro_rules! goto {
-    ($label:literal) => {{
-        use core::arch::asm;
-        #[allow(named_asm_labels)]
-        #[cfg(any(target_arch = "x86_64"))]
-        {
-            asm!(concat!("jmp ", $label));
+    ($label:literal) => {
+        $crate::might_skip! {{
+            use core::arch::asm;
+            #[allow(named_asm_labels)]
+            #[cfg(any(target_arch = "x86_64"))]
+            {
+                asm!(concat!("jmp ", $label));
+            }
+            #[cfg(any(target_arch = "aarch64"))]
+            {
+                asm!(concat!("b ", $label));
+            }
+            #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
+            compile_error!("`goto!` not implemented for this architecture!");
+        }}
+    };
+}
+
+/// Inform the compiler that this expression might be skipped by `goto!`
+///
+/// This prevents segfaults in optimized builds by preventing optimization with surrounding code
+#[macro_export]
+macro_rules! might_skip {
+    ($expression:expr) => {{
+        #[allow(unused_unsafe)]
+        if unsafe {
+            let x = 42;
+            let y = &x as *const i32;
+            // This will always be true but the compiler doesn't know that!
+            core::ptr::read_volatile(y) == core::ptr::read_volatile(y)
+        } {
+            $expression
+        } else {
+            Default::default()
         }
-        #[cfg(any(target_arch = "aarch64"))]
-        {
-            asm!(concat!("b ", $label));
-        }
-        #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
-        compile_error!("`goto!` not implemented for this architecture!");
     }};
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
-    fn count() {
-        const MAX: i32 = 10;
-        let mut x = 0;
+    fn basic() {
         unsafe {
-            label!("start_0");
-            x += 1;
-            if x < MAX {
-                goto!("start_0")
-            }
+            let mut x = 0;
+            goto!("end0");
+            might_skip! {x = 42};
+            label!("end0");
+            assert_eq!(x, 0);
         }
-        assert_eq!(x, MAX);
     }
 }
