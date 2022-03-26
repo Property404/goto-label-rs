@@ -4,7 +4,7 @@
 //!
 //! # Example
 //! ```
-//! use goto_label::{goto, label, might_skip};
+//! use goto_label::{goto, label};
 //!
 //! #[no_mangle] // Needed to prevent foo() from being optimized away
 //! unsafe fn foo() {
@@ -19,7 +19,7 @@
 //!
 //! unsafe fn hello_world() {
 //!     goto!("label1");
-//!     might_skip!{println!("This won't be printed either!")};
+//!     println!("This won't be printed either!");
 //!
 //!     label!("label2");
 //!     println!(" World!");
@@ -95,10 +95,12 @@ macro_rules! goto {
     };
 }
 
-/// Inform the compiler that this expression might be skipped by `goto!`
-///
-/// This prevents segfaults in optimized builds by preventing optimization with surrounding code
+// Inform the compiler that this expression might be skipped by `goto!`
+//
+// This attempts to prevent segfaults in optimized builds by preventing optimization with
+// surrounding code. It doesn't work well enough to keep as a documented public macro.
 #[macro_export]
+#[doc(hidden)]
 macro_rules! might_skip {
     ($expression:expr) => {{
         #[allow(unused_unsafe)]
@@ -121,8 +123,12 @@ mod tests {
     fn basic() {
         unsafe {
             let mut x = 0;
+            assert_eq!(x, 0);
+
             goto!("end0");
-            might_skip! {x = 42};
+
+            x = 42;
+
             label!("end0");
             assert_eq!(x, 0);
         }

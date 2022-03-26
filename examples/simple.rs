@@ -1,12 +1,15 @@
-use goto_label::{goto, label, might_skip};
+use goto_label::{goto, label};
 
 fn main() {
     unsafe {
         goto!("label0");
     }
-    might_skip! {println!("This will be skipped")};
+
+    println!("This will be skipped");
+
     unsafe {
         label!("label0");
     }
+
     println!("Hello world!");
 }

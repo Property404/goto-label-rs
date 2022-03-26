@@ -1,19 +1,19 @@
-use goto_label::{goto, label, might_skip};
+use goto_label::{goto, label};
 
 #[no_mangle] // Needed to prevent foo() from being optimized away
 unsafe fn foo() {
-    might_skip! {println!("This text will never be printed!")}
+    println!("This text will never be printed!");
 
     label!("label1");
-    might_skip! {print!("Hello")}
+    print!("Hello");
     goto!("label2");
 
-    might_skip! {println!("Neither will this be printed!")}
+    println!("Neither will this be printed!");
 }
 
 unsafe fn hello_world() {
     goto!("label1");
-    might_skip! {println!("This won't be printed either!")}
+    println!("This won't be printed either!");
 
     label!("label2");
     println!(" World!")
