@@ -1,8 +1,12 @@
 [package]
 name = "goto-label"
-version = "0.1.0"
+authors = ["Property404 <martinez.dagan@gmail.com>"]
+description = "`goto` implementation for Rust"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Property404/goto-label-rs"
 rust-version = "1.59.0"
+version = "0.1.0"
 
 [dependencies]
 
