@@ -38,7 +38,8 @@ unsafe {
 
 ## Currently supported Architectures
 
-* amd64/x86\_64
+* x86
+* x86\_64
 * aarch64
 
 ## See also

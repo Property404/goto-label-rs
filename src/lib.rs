@@ -49,12 +49,12 @@ macro_rules! label {
     ($label:literal) => {
         $crate::might_skip! {{
             #[allow(named_asm_labels)]
-            #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+            #[cfg(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64"))]
             {
                 use core::arch::asm;
                 asm!(concat!($label, ":"));
             }
-            #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+            #[cfg(not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64")))]
             compile_error!("`label!` not implemented for this architecture!");
         }}
     };
@@ -81,7 +81,7 @@ macro_rules! goto {
         $crate::might_skip! {{
             use core::arch::asm;
             #[allow(named_asm_labels)]
-            #[cfg(any(target_arch = "x86_64"))]
+            #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
             {
                 asm!(concat!("jmp ", $label));
             }
@@ -89,7 +89,7 @@ macro_rules! goto {
             {
                 asm!(concat!("b ", $label));
             }
-            #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
+            #[cfg(not(any(target_arch = "x86", target_arch = "aarch64", target_arch = "x86_64")))]
             compile_error!("`goto!` not implemented for this architecture!");
         }}
     };
