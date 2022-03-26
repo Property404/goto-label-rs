@@ -1,4 +1,5 @@
 #![no_std]
+#![warn(missing_docs)]
 //! `goto` and `label` for Rust!
 //! Now you never have to use `while`, `for`, or `loop` again!
 //!
