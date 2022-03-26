@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.59.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+
+[profile.release]
+# If you use this crate as a dependency, you should add this line in your Cargo.toml 
+# otherwise your code WILL segfault
+opt-level = 1
