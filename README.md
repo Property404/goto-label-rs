@@ -6,9 +6,6 @@ and "for"?
 Well worry no more! Finally, "goto" and "label" macros have arrived for Rust!
 And they're `#![no_std]`!
 
-**Warning** - Do not actually use this crate. It will definitely cause
-undefined behavior, most likely manifesting as segfaults.
-
 ```rust
 use goto_label::{goto, label};
 
@@ -41,6 +38,11 @@ unsafe {
 * x86
 * x86\_64
 * aarch64
+
+## Warning
+
+Do not actually use this crate. It will definitely cause
+undefined behavior, most likely manifesting as segfaults.
 
 ## See also
 
